@@ -81,13 +81,13 @@ module.exports = (db) => {
         var offset = (req.query.page * limit) - limit;
         db.all(`SELECT * FROM Rides LIMIT ? OFFSET ?`, [limit, offset], function (err, rows) {
             if (err) {
-                res.send({
+                return res.send({
                     error_code: "SERVER_ERROR",
                     message: "Unknown error"
                 }) 
             }
             if (rows.length === 0) {
-                res.send ({
+                return res.send ({
                     error_code: 'RIDES_NOT_FOUND_ERROR',
                     message: 'Could not find any rides'
                 })
