@@ -76,23 +76,24 @@ module.exports = (db) => {
     });
 
     app.get('/rides', (req, res) => {
-        db.all('SELECT * FROM Rides', function (err, rows) {
+        if (!req.query.page && !req.query.limit) res.send({ error_code: 'INVALID_QUERY_PARAMETER', message: "Invalid query parameter" }) 
+        var limit = req.query.limit;
+        var offset = (req.query.page * limit) - limit;
+        db.all(`SELECT * FROM Rides LIMIT ? OFFSET ?`, [limit, offset], function (err, rows) {
             if (err) {
                 return res.send({
-                    error_code: 'SERVER_ERROR',
-                    message: 'Unknown error'
-                });
+                    error_code: "SERVER_ERROR",
+                    message: "Unknown error"
+                }) 
             }
-
             if (rows.length === 0) {
-                return res.send({
+                return res.send ({
                     error_code: 'RIDES_NOT_FOUND_ERROR',
                     message: 'Could not find any rides'
-                });
+                })
             }
-
             res.send(rows);
-        });
+        })
     });
 
     app.get('/rides/:id', (req, res) => {
