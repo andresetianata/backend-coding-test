@@ -80,8 +80,6 @@ module.exports = (db) => {
         var limit = req.query.limit;
         var offset = (req.query.page * limit) - limit;
         db.all(`SELECT * FROM Rides LIMIT ? OFFSET ?`, [limit, offset], function (err, rows) {
-            console.log("Error", err)
-            console.log("Rows", rows)
             if (err) {
                 res.send({
                     error_code: "SERVER_ERROR",
