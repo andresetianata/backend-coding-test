@@ -16,6 +16,13 @@ db.serialize(() => {
     buildSchemas(db);
 
     const app = require('./src/app')(db);
+    app.use(function(err, req, res, next) {
+        var message = (err.message ? err.message : 'internal error')
+        res.status(err.status || 500).json({
+            error_code: err.error_code,
+            message: message
+        })
+    }); 
 
     app.listen(port, () => console.log(`App started and listening on port ${port}`));
 });
