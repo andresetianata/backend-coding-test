@@ -11,7 +11,7 @@ module.exports = (db) => {
 
     app.get('/health', (req, res) => res.send('Healthy'));
 
-    app.post('/rides', jsonParser, async (req, res) => {
+    app.post('/rides', jsonParser, async (req, res, next) => {
         try {
             const startLatitude = Number(req.body.start_lat);
             const startLongitude = Number(req.body.start_long);
@@ -58,12 +58,9 @@ module.exports = (db) => {
 
             var values = [req.body.start_lat, req.body.start_long, req.body.end_lat, req.body.end_long, req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
 
-            let insert = await database.do_exec_sqlite_run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values);
+            let insert = await database.do_exec_sqlite_insert_rides( values);
             if (insert.status== "success") {
-                let readById = await database.do_exec_sqlite_all('SELECT * FROM Rides WHERE rideID = ?', this.lastID);
-                if (readById.status == "success") {
-                    res.send(readById.rows);
-                }
+                res.send(insert.rows);
             }
         }
         catch(error) {
